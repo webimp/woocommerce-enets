@@ -220,7 +220,7 @@ function enets_shortcode()
                         <td><strong>Product</strong></td>
                         <td><strong>Quantity</strong></td>
                         <td><strong>Price</strong></td>
-                        <td><strong>GST 7% <small>(GST Reg. 198300285N)</small></strong></td>
+                        <td><strong>GST 7%</strong></td>
                         <td><strong>Order Total</strong></td>
                     </tr>
                     <?php
