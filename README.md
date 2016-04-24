@@ -1,1 +1,1 @@
-# woocommerce-enets
+# WooCommerce eNETS UMAPI Lite Plugin
