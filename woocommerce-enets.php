@@ -2,7 +2,7 @@
 /*
 Plugin Name: WooCommerce eNETS
 Description: WooCommerce eNETS lets your customers pay via eNETS.
-Version: 1.0.0
+Version: 1.0.1
 Author: Web Imp Pte Ltd
 Requires at least: 4.5
 Tested up to: 4.5
@@ -38,8 +38,7 @@ function init_wc_gateway_enets() {
             $this->description        = $this->get_option('description');
             $this->instructions       = $this->get_option('instructions');
             $this->enable_for_methods = $this->get_option('enable_for_methods', array());
-            $this->development_mode   = (bool) ($this->get_option('development_mode') == "yes");
-            $this->form_action        = $this->get_enets_url($this->development_mode);
+            $this->development_mode   = $this->get_option('development_mode');
             $this->mid                = $this->get_option('mid');
 
             // Actions
@@ -150,7 +149,7 @@ function init_wc_gateway_enets() {
             $form_values = array(
                 'amount'      => $order->get_total(),
                 'mid'         => $this->mid,
-                'form_action' => $this->form_action,
+                'dev'         => $this->development_mode,
                 'txnRef'      => $order->id,
                 'order_id'    => $order->id,
                 'umapiType'   => 'lite',
@@ -177,9 +176,9 @@ function init_wc_gateway_enets() {
 
 
 
-        private function get_enets_url($dev = FALSE)
+        public function get_enets_url($dev = 'no')
         {
-            if ($dev)
+            if ($dev == 'yes')
                 return 'https://test.enets.sg/enets2/enps.do';
             else
                 return 'https://www.enets.sg/enets2/enps.do';
@@ -204,11 +203,11 @@ function enets_shortcode()
 {
     global $woocommerce;
 
-    $amount      = $_GET['amount'];
-    $mid         = $_GET['mid'];
-    $txnRef      = $_GET['txnRef'];
-    $umapiType   = $_GET['umapiType'];
-    $form_action = $_GET['form_action'];
+    $amount    = $_GET['amount'];
+    $mid       = $_GET['mid'];
+    $txnRef    = $_GET['txnRef'];
+    $umapiType = $_GET['umapiType'];
+    $dev       = $_GET['dev'];
 
     ?>
     <div class="col-xs-12">
@@ -220,7 +219,7 @@ function enets_shortcode()
                         <td><strong>Product</strong></td>
                         <td><strong>Quantity</strong></td>
                         <td><strong>Price</strong></td>
-                        <td><strong>GST 7%</strong></td>
+                        <td><strong>GST 7% <small>(GST Reg. 198300285N)</small></strong></td>
                         <td><strong>Order Total</strong></td>
                     </tr>
                     <?php
@@ -255,7 +254,7 @@ function enets_shortcode()
 
         <?php $gateway = new WC_Gateway_Enets(); ?>
 
-        <form name="cart" method="post" action="<?php echo $form_action; ?>">
+        <form name="cart" method="post" action="<?php echo $gateway->get_enets_url($dev); ?>">
             <input type="hidden" name="amount" value="<?php echo $amount; ?>">
             <input type="hidden" name="txnRef" value="<?php echo $txnRef; ?>">
             <input type="hidden" name="mid" value="<?php echo $mid; ?>">
